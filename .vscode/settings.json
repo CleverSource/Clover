@@ -4,6 +4,7 @@
         "iosfwd": "c",
         "xlocbuf": "c",
         "application.h": "c",
-        "logger.h": "c"
+        "logger.h": "c",
+        "platform.h": "c"
     }
 }
