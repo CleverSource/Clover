@@ -15,8 +15,4 @@ SET linkerFlags=-L../bin/ -lengine.lib
 SET defines=-D_DEBUG -DCIMPORT
 
 ECHO "Building %assembly%%..."
-clang %cFilenames% %compilerFlags% -o ../bin/%assembly%.exe %defines% %includeFlags% %linkerFlags%PUSHD engine
-CALL build.bat
-POPD
-IF %ERRORLEVEL% NEQ 0 (echo Error:%errorlevel% && exit)
-
+clang %cFilenames% %compilerFlags% -o ../bin/%assembly%.exe %defines% %includeFlags% %linkerFlags%
