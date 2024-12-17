@@ -5,6 +5,9 @@
         "xlocbuf": "c",
         "application.h": "c",
         "logger.h": "c",
-        "platform.h": "c"
+        "platform.h": "c",
+        "array": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp"
     }
 }

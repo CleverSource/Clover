@@ -43,6 +43,8 @@ void* _darray_resize(void* array)
         (DARRAY_RESIZE_FACTOR * darray_capacity(array)),
         stride
     );
+    ccopy_memory(temp, array, length * stride);
+
     _darray_field_set(temp, DARRAY_LENGTH, length);
     _darray_destroy(array);
     return temp;
