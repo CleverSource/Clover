@@ -56,6 +56,17 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": "build"
+        },
+        {
+            "type": "shell"
+            "label": "Post-Build",
+            "windows": {
+                "command": "${workspaceFolder}/post-build.bat"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build"
         }
     ]
 }
