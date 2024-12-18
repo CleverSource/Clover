@@ -11,6 +11,9 @@
         "xstring": "cpp",
         "vulkan_renderpass.h": "c",
         "vulkan_types.inl": "c",
-        "cmemory.h": "c"
+        "cmemory.h": "c",
+        "type_traits": "cpp",
+        "ios": "cpp",
+        "xiosbase": "cpp"
     }
 }
