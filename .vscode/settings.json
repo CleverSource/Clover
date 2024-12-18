@@ -8,6 +8,9 @@
         "platform.h": "c",
         "array": "cpp",
         "vector": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "vulkan_renderpass.h": "c",
+        "vulkan_types.inl": "c",
+        "cmemory.h": "c"
     }
 }
