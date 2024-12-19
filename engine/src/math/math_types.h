@@ -14,19 +14,17 @@ typedef union vec2_u {
     };
 } vec2;
 
-typedef struct vec3_u {
-    union {
-        f32 elements[3];
-        struct {
-            union {
-                f32 x, r, s, u;
-            };
-            union {
-                f32 y, g, t, v;
-            };
-            union {
-                f32 z, b, p, w;
-            };
+typedef union vec3_u {
+    f32 elements[3];
+    struct {
+        union {
+            f32 x, r, s, u;
+        };
+        union {
+            f32 y, g, t, v;
+        };
+        union {
+            f32 z, b, p, w;
         };
     };
 } vec3;

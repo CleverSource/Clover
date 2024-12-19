@@ -137,14 +137,14 @@ CINLINE vec2 vec2_normalized(vec2 vector)
 CINLINE b8 vec2_compare(vec2 vector_0, vec2 vector_1, f32 tolerance)
 {
     if (cabs(vector_0.x - vector_1.x) > tolerance) {
-        return FALSE;
+        return false;
     }
 
     if (cabs(vector_0.y - vector_1.y) > tolerance) {
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 CINLINE f32 vec2_distance(vec2 vector_0, vec2 vector_1)
@@ -301,18 +301,18 @@ CINLINE vec3 vec3_cross(vec3 vector_0, vec3 vector_1)
 CINLINE const b8 vec3_compare(vec3 vector_0, vec3 vector_1, f32 tolerance)
 {
     if (cabs(vector_0.x - vector_1.x) > tolerance) {
-        return FALSE;
+        return false;
     }
 
     if (cabs(vector_0.y - vector_1.y) > tolerance) {
-        return FALSE;
+        return false;
     }
 
     if (cabs(vector_0.z - vector_1.z) > tolerance) {
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 CINLINE f32 vec3_distance(vec3 vector_0, vec3 vector_1)

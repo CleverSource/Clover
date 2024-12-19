@@ -91,10 +91,10 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
 
     for (u32 i = 0; i < required_validation_layer_count; i++) {
         CINFO("Searching for layer: %s", required_validation_layer_names[i]);
-        b8 found = FALSE;
+        b8 found = false;
         for (u32 j = 0; j < available_layer_count; j++) {
             if (strings_equal(required_validation_layer_names[i], available_layers[j].layerName)) {
-                found = TRUE;
+                found = true;
                 CINFO("Found");
                 break;
             }
@@ -102,7 +102,7 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
 
         if (!found) {
             CFATAL("Required validation layer is missing: %s", required_validation_layer_names[i]);
-            return FALSE;
+            return false;
         }
     }
 
@@ -137,13 +137,13 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
     CDEBUG("Creating Vulkan surface");
     if (!platform_create_vulkan_surface(plat_state, &context)) {
         CERROR("Failed to create platform surface");
-        return FALSE;
+        return false;
     }
     CDEBUG("Vulkan surface created");
 
     if (!vulkan_device_create(&context)) {
         CERROR("Failed to create device");
-        return FALSE;
+        return false;
     }
 
     vulkan_swapchain_create(
@@ -174,7 +174,7 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
         vkCreateSemaphore(context.device.logical_device, &semaphore_create_info, context.allocator, &context.image_available_semaphores[i]);
         vkCreateSemaphore(context.device.logical_device, &semaphore_create_info, context.allocator, &context.queue_complete_semaphores[i]);
 
-        vulkan_fence_create(&context, TRUE, &context.in_flight_fences[i]);   
+        vulkan_fence_create(&context, true, &context.in_flight_fences[i]);   
     }
 
     context.images_in_flight = darray_reserve(vulkan_fence, context.swapchain.image_count);
@@ -183,7 +183,7 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
     }
 
     CINFO("Vulkan renderer initialized successfully");
-    return TRUE;
+    return true;
 }
 
 void vulkan_renderer_backend_shutdown(renderer_backend* backend)
@@ -249,12 +249,14 @@ void vulkan_renderer_backend_shutdown(renderer_backend* backend)
         context.surface = 0;
     }
 
+#if defined(_DEBUG)
     CDEBUG("Destroying Vulkan debugger");
     if (context.debug_messenger) {
         PFN_vkDestroyDebugUtilsMessengerEXT func =
             (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(context.instance, "vkDestroyDebugUtilsMessengerEXT");
         func(context.instance, context.debug_messenger, context.allocator);
     }
+#endif
 
     CDEBUG("Destroying Vulkan instance");
     vkDestroyInstance(context.instance, context.allocator);
@@ -276,26 +278,26 @@ b8 vulkan_renderer_backend_begin_frame(renderer_backend* backend, f32 delta_time
     if (context.recreating_swapchain) {
         VkResult result = vkDeviceWaitIdle(device->logical_device);
         if (!vulkan_result_is_success(result)) {
-            CERROR("vulkan_renderer_backend_begin_frame vkDeviceWaitIdle (1) failed: '%s'", vulkan_result_string(result, TRUE));
-            return FALSE;
+            CERROR("vulkan_renderer_backend_begin_frame vkDeviceWaitIdle (1) failed: '%s'", vulkan_result_string(result, true));
+            return false;
         }
         CINFO("Recreating swapchain, aborting");
-        return FALSE;
+        return false;
     }
 
     if (context.framebuffer_size_generation != context.framebuffer_size_last_generation) {
         VkResult result = vkDeviceWaitIdle(device->logical_device);
         if (!vulkan_result_is_success(result)) {
-            CERROR("vulkan_renderer_backend_begin_frame vkDeviceWaitIdle (2) failed: '%s'", vulkan_result_string(result, TRUE));
-            return FALSE;
+            CERROR("vulkan_renderer_backend_begin_frame vkDeviceWaitIdle (2) failed: '%s'", vulkan_result_string(result, true));
+            return false;
         }
 
         if (!recreate_swapchain(backend)) {
-            return FALSE;
+            return false;
         }
 
         CINFO("Resized, aborting");
-        return FALSE;
+        return false;
     }
 
     if (!vulkan_fence_wait(
@@ -304,7 +306,7 @@ b8 vulkan_renderer_backend_begin_frame(renderer_backend* backend, f32 delta_time
         UINT64_MAX))
     {
         CWARN("In-flight fence wait failure");
-        return FALSE;
+        return false;
     }
 
     if (!vulkan_swapchain_acquire_next_image_index(
@@ -315,12 +317,12 @@ b8 vulkan_renderer_backend_begin_frame(renderer_backend* backend, f32 delta_time
         0,
         &context.image_index))
     {
-        return FALSE;    
+        return false;    
     }
 
     vulkan_command_buffer* command_buffer = &context.graphics_command_buffers[context.image_index];
     vulkan_command_buffer_reset(command_buffer);
-    vulkan_command_buffer_begin(command_buffer, FALSE, FALSE, FALSE);
+    vulkan_command_buffer_begin(command_buffer, false, false, false);
 
     VkViewport viewport;
     viewport.x = 0.0f;
@@ -346,7 +348,7 @@ b8 vulkan_renderer_backend_begin_frame(renderer_backend* backend, f32 delta_time
         &context.main_renderpass,
         context.swapchain.framebuffers[context.image_index].handle);
 
-    return TRUE;
+    return true;
 }
 
 b8 vulkan_renderer_backend_end_frame(renderer_backend* backend, f32 delta_time)
@@ -385,8 +387,8 @@ b8 vulkan_renderer_backend_end_frame(renderer_backend* backend, f32 delta_time)
         context.in_flight_fences[context.current_frame].handle);
 
     if (result != VK_SUCCESS) {
-        CERROR("vkQueueSubmit failed with result: '%s'", vulkan_result_string(result, TRUE));
-        return FALSE;
+        CERROR("vkQueueSubmit failed with result: '%s'", vulkan_result_string(result, true));
+        return false;
     }
 
     vulkan_command_buffer_update_submitted(command_buffer);
@@ -399,7 +401,7 @@ b8 vulkan_renderer_backend_end_frame(renderer_backend* backend, f32 delta_time)
         context.queue_complete_semaphores[context.current_frame],
         context.image_index);
 
-    return TRUE;
+    return true;
 }
 
 VKAPI_ATTR VkBool32 vk_debug_callback(
@@ -461,7 +463,7 @@ void create_command_buffers(renderer_backend* backend)
         vulkan_command_buffer_allocate(
             &context,
             context.device.graphics_command_pool,
-            TRUE,
+            true,
             &context.graphics_command_buffers[i]);
     }
 
@@ -492,15 +494,15 @@ b8 recreate_swapchain(renderer_backend* backend)
 {
     if (context.recreating_swapchain) {
         CDEBUG("recreate_swapchain called when already recreating. Aborting");
-        return FALSE;
+        return false;
     }
 
     if (context.framebuffer_width == 0 || context.framebuffer_height == 0) {
         CDEBUG("recreate_swapchain called when window is < 1 in a dimension. Aborting");
-        return FALSE;
+        return false;
     }
 
-    context.recreating_swapchain = TRUE;
+    context.recreating_swapchain = true;
 
     vkDeviceWaitIdle(context.device.logical_device);
 
@@ -546,7 +548,7 @@ b8 recreate_swapchain(renderer_backend* backend)
 
     create_command_buffers(backend);
 
-    context.recreating_swapchain = FALSE;
+    context.recreating_swapchain = false;
 
-    return TRUE;
+    return true;
 }
