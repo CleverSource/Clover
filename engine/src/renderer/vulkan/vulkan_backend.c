@@ -19,6 +19,8 @@
 
 #include "platform/platform.h"
 
+#include "shaders/vulkan_object_shader.h"
+
 static vulkan_context context;
 static u32 cached_framebuffer_width = 0;
 static u32 cached_framebuffer_height = 0;
@@ -35,7 +37,7 @@ void create_command_buffers(renderer_backend* backend);
 void regenerate_framebuffers(renderer_backend* backend, vulkan_swapchain* swapchain, vulkan_renderpass* renderpass);
 b8 recreate_swapchain(renderer_backend* backend);
 
-b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* application_name, struct platform_state* plat_state)
+b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* application_name)
 {
     context.find_memory_index = find_memory_index;
 
@@ -135,7 +137,7 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
 #endif
 
     CDEBUG("Creating Vulkan surface");
-    if (!platform_create_vulkan_surface(plat_state, &context)) {
+    if (!platform_create_vulkan_surface(&context)) {
         CERROR("Failed to create platform surface");
         return false;
     }
@@ -180,6 +182,11 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
     context.images_in_flight = darray_reserve(vulkan_fence, context.swapchain.image_count);
     for (u32 i = 0; i < context.swapchain.image_count; i++) {
         context.images_in_flight[i] = 0;
+    }
+
+    if (!vulkan_object_shader_create(&context, &context.object_shader)) {
+        CERROR("Error loading built-in basic_lighting shader");
+        return false;
     }
 
     CINFO("Vulkan renderer initialized successfully");
